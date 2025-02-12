@@ -1,51 +1,53 @@
 /* Navbar general */
-nav {
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #023047; /* Color oscuro */
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e1e1e; /* Color oscuro */
-  padding: 10px 20px;
+  z-index: 1000;
 }
 
-/* Lista de elementos */
-nav ul {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 0;
-  margin: 0;
+/* Contenedores del navbar */
+.navbar-left {
+  flex: 1;
 }
 
-/* Elementos de la lista */
-nav ul li {
+.navbar-center {
+  flex: 2;
   display: flex;
+  justify-content: center;
+}
+
+.navbar-right {
+  flex: 1.5;
+  display: flex-end;
   align-items: center;
 }
 
 /* Estilos de los links */
-nav a {
+.navbar-left a {
   text-decoration: none;
   color: white;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   transition: color 0.3s ease-in-out;
-}
-
-nav a:hover {
-  color: #f0a500; /* Color de hover */
 }
 
 /* Iconos */
 .navbar-icon {
   width: 24px;
   height: 24px;
-  fill: white;
+  filter: invert(1); /* Convierte los SVG negros en blancos */
   transition: transform 0.2s ease-in-out;
 }
 
 .navbar-icon:hover {
-  transform: scale(1.1); /* Pequeña animación al pasar el mouse */
+  transform: scale(1.1);
 }
 
 /* Barra de búsqueda */
@@ -62,37 +64,30 @@ input[type="text"] {
   outline: none;
   padding: 5px;
   font-size: 14px;
-  width: 150px;
+  width: 200px;
   border-radius: 20px;
 }
 
 button {
-  background-color: #f0a500;
+  background-color: transparent;
   border: none;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
 
-button:hover {
-  background-color: #d98c00;
-}
-
 /* Responsivo */
 @media (max-width: 768px) {
-  nav {
+  .navbar {
     flex-direction: column;
     align-items: center;
+    padding: 10px;
   }
 
-  nav ul {
-    flex-direction: column;
-    gap: 10px;
+  .navbar-right {
+    justify-content: center;
   }
 
   input[type="text"] {
-    width: 100px;
+    width: 150px;
   }
 }
