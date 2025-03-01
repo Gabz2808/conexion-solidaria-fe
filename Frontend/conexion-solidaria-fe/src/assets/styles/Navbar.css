@@ -1,15 +1,18 @@
 /* Navbar general */
+/* Navbar */
+
 .navbar {
+  color: white;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #023047; /* Color oscuro */
+  background-color: #023047;
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000; /* Asegura que esté por debajo del menú */
 }
 
 /* Contenedores del navbar */
@@ -25,12 +28,13 @@
 
 .navbar-right {
   flex: 1.5;
-  display: flex-end;
+  display: flex;
   align-items: center;
+  justify-content: flex-end;
 }
 
 /* Estilos de los links */
-.navbar-left a {
+.navbar-left .navbar-logo {
   text-decoration: none;
   color: white;
   font-size: 18px;
@@ -42,12 +46,19 @@
 .navbar-icon {
   width: 24px;
   height: 24px;
-  filter: invert(1); /* Convierte los SVG negros en blancos */
-  transition: transform 0.2s ease-in-out;
+  margin: 0 10px;
 }
 
-.navbar-icon:hover {
-  transform: scale(1.1);
+.navbar-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.navbar-btn:hover {
+  background-color: #ffb703;
+  border-radius: 50%;
 }
 
 /* Barra de búsqueda */
@@ -83,8 +94,13 @@ button {
     padding: 10px;
   }
 
+  .navbar-center {
+    margin-bottom: 10px;
+  }
+
   .navbar-right {
     justify-content: center;
+    margin-top: 10px;
   }
 
   input[type="text"] {

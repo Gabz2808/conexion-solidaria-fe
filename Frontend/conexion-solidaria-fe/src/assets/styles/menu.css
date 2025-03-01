@@ -1,0 +1,83 @@
+/* Menu.css */
+.menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.menu-container.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro */
+  z-index: 999;
+}
+
+.menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #023047;
+  padding-top: 60px;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+
+  /* Centrar verticalmente */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Opcional, para centrar horizontalmente */
+}
+
+.menu ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0; /* Asegurar que no haya márgenes que afecten el centrado */
+}
+
+.menu-container.open .menu {
+  transform: translateX(0);
+}
+
+.menu ul li {
+  padding: 15px 20px;
+  text-align: left;
+}
+
+.menu ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.menu ul li a:hover {
+  background-color: #ddd;
+  color: #023047;
+}
+/* Estilos de MenuButton */
+.menu-button {
+  position: fixed;
+  top: 50%; /* Centra verticalmente */
+  left: 20px; /* Mantiene la distancia desde la izquierda */
+  transform: translateY(-50%); /* Ajusta la posición exacta */
+  z-index: 1100; /* Asegura que esté sobre otros elementos */
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}

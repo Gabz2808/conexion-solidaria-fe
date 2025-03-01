@@ -1,0 +1,9 @@
+.navbar-icon {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.navbar-icon:hover {
+  transform: scale(1.1);
+}

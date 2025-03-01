@@ -1,5 +1,67 @@
+import React from "react";
+import Post from "../Components/UI/post";
+
+interface PostData {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  author: {
+    name: string;
+    avatarUrl?: string;
+  };
+  imageUrl?: string;
+}
+
 const Home: React.FC = () => {
-  return <h2>Página de Inicio</h2>;
+  // Array de ejemplo de publicaciones
+  const posts: PostData[] = [
+    {
+      id: 1,
+      title: "Post 1",
+      description: "This is the first post description.",
+      date: "2025-02-28T00:00:00Z",
+      author: {
+        name: "John Doe",
+        avatarUrl: "https://via.placeholder.com/150",
+      },
+      imageUrl: "https://via.placeholder.com/600x400",
+    },
+    {
+      id: 2,
+      title: "Post 2",
+      description: "This is the second post description.",
+      date: "2025-02-25T00:00:00Z",
+      author: {
+        name: "Jane Doe",
+        avatarUrl: "https://via.placeholder.com/150",
+      },
+      imageUrl: "https://via.placeholder.com/600x400",
+    },
+  ];
+
+  return (
+    <div className="container mx-auto p-6">
+      <h1 className="text-center text-3xl font-semibold text-gray-800 mb-8">
+        Inicio
+      </h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post) => (
+          <div
+            key={post.id}
+            className="bg-white rounded-lg shadow-lg overflow-hidden"
+          >
+            <Post
+              author={post.author}
+              description={post.description}
+              date={post.date}
+              imageUrl={post.imageUrl}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Home;

@@ -11,7 +11,7 @@ const SearchBar = () => (
       name="s"
       style={{
         width: "200px",
-        backgroundColor: "#f2f2f2",
+        backgroundColor: "white",
         color: "black",
         borderRadius: "20px",
         padding: "5px",
