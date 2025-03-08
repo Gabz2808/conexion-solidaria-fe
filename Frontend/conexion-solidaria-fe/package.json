@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@flaticon/flaticon-uicons": "^3.3.1",
     "@headlessui/vue": "^1.7.23",
+    "@heroicons/react": "^2.2.0",
     "@heroicons/vue": "^2.2.0",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",

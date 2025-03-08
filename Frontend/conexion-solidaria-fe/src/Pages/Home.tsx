@@ -27,23 +27,12 @@ const Home: React.FC = () => {
       },
       imageUrl: "https://via.placeholder.com/600x400",
     },
-    {
-      id: 2,
-      title: "Post 2",
-      description: "This is the second post description.",
-      date: "2025-02-25T00:00:00Z",
-      author: {
-        name: "Jane Doe",
-        avatarUrl: "https://via.placeholder.com/150",
-      },
-      imageUrl: "https://via.placeholder.com/600x400",
-    },
   ];
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 ">
       <h1 className="text-center text-3xl font-semibold text-gray-800 mb-8">
-        Inicio
+        Conexión solidaria
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
