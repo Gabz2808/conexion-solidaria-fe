@@ -22,7 +22,7 @@ const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-[#D3D3D3]">
+    <div className="flex items-center justify-center h-screen ">
       <div className="bg-[#F5F5F5] p-8 rounded shadow-2xl w-96">
         <h2 className="text-3xl font-semibold mb-6 text-[#003366] text-center">
           {isLogin ? "Iniciar sesión" : "Registro"}

@@ -7,6 +7,7 @@ import Profile from "./Pages/Profile"; // Asegúrate de usar la ruta correcta pa
 
 import "./App.css";
 import "./index.css";
+import Groups from "./Pages/Groups";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/groups" element={<Groups />} />
       </Routes>
     </Router>
   );

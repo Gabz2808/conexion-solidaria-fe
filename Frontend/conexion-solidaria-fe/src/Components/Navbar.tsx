@@ -8,7 +8,6 @@ import LogoutIcon from "./../assets/icons/exit.svg";
 import Messages from "./../assets/icons/messages.svg";
 import Marketplace from "./../assets/icons/shopping-cart.svg";
 import Groups from "./../assets/icons/groups.svg";
-
 const Navbar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -21,7 +20,7 @@ const Navbar: React.FC = () => {
       {" "}
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="text-white text-xl font-bold">
-          Logo {/* Logo con estilo */}
+          Conexión Solidaria
         </Link>
         <ul className="flex space-x-6">
           {" "}
