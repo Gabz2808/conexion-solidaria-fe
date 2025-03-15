@@ -4,6 +4,7 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Marketplace from "./Pages/Marketplace"; // Asegúrate de usar la ruta correcta para Marketplace
 import Profile from "./Pages/Profile"; // Asegúrate de usar la ruta correcta para Marketplace
+import Messages from "./Pages/Messages"; // Asegúrate de usar la ruta correcta para Marketplace
 
 import "./App.css";
 import "./index.css";
@@ -22,6 +23,7 @@ const App: React.FC = () => {
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/groups" element={<Groups />} />
+        <Route path="/messages" element={<Messages />} />
       </Routes>
     </Router>
   );

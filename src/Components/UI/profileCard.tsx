@@ -21,7 +21,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
   }
 
   return (
-    <div className="p-16 bg-[#FFF9FB]">
+    <div className="p-16 ">
       <div className="p-8 bg-white shadow-xl mt-24 rounded-lg border border-[#D3D4D9]">
         <div className="grid grid-cols-1 md:grid-cols-3">
           {/* Estadísticas */}
@@ -58,9 +58,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
           </div>
           {/* Botones de acción */}
           <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
-            <button className="text-white py-2 px-4 uppercase rounded bg-[#4B88A2] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
-              Conectar
-            </button>
             <button className="text-white py-2 px-4 uppercase rounded bg-[#BB0A21] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
               Mensaje
             </button>
@@ -96,9 +93,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
               <strong>Estado:</strong> {usuario.estado}
             </p>
           </div>
-          <button className="text-[#4B88A2] py-2 px-4 font-medium mt-4">
-            Mostrar más
-          </button>
         </div>
       </div>
     </div>

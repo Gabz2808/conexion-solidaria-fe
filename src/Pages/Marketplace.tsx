@@ -34,7 +34,9 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#D3D4D9] p-6">
-      <h1 className="text-4xl text-center mb-8 text-[#023047]">Marketplace</h1>
+      <h1 className="text-3xl font-bold text-[#023047] text-center">
+        Marketplace
+      </h1>
       <div className="mb-6 flex justify-center">
         {categories.map((category) => (
           <button
