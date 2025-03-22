@@ -1,4 +1,5 @@
 import React from "react";
+import { format } from "date-fns";
 
 export interface Usuario {
   idUsuario: number;
@@ -12,13 +13,17 @@ export interface Usuario {
 }
 
 interface ProfileCardProps {
-  usuario: Usuario | null | undefined; // Permitir que usuario sea null o undefined
+  usuario: Usuario | null | undefined;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
   if (!usuario) {
     return <div className="text-center text-gray-500">Cargando...</div>;
   }
+
+  const formattedDate = usuario.fechaRegistro
+    ? format(new Date(usuario.fechaRegistro), "dd/MM/yyyy")
+    : "Fecha no disponible";
 
   return (
     <div className="p-16 ">
@@ -84,7 +89,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
               <strong>Email:</strong> {usuario.email}
             </p>
             <p>
-              <strong>Fecha de Registro:</strong> {usuario.fechaRegistro}
+              <strong>Fecha de Registro:</strong> {formattedDate}
             </p>
             <p>
               <strong>Rol:</strong> {usuario.rol}
