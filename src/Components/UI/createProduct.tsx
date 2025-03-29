@@ -3,28 +3,43 @@ import React, { useState } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  categories: string[]; // Agregamos las categorías disponibles
 }
 
-const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-  const [title, setTitle] = useState("");
+const CreateProduct: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  categories,
+}) => {
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [price, setPrice] = useState<number | string>(""); // Precio como número o cadena
   const [image, setImage] = useState<File | null>(null);
+  const [category, setCategory] = useState<string>(""); // Categoría del producto
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica para enviar el post junto con la imagen
-    console.log("Post creado:", { title, description, image });
+    // Aquí puedes agregar la lógica para enviar el producto junto con la imagen
+    console.log("Producto creado:", {
+      name,
+      description,
+      price,
+      image,
+      category,
+    });
 
     // Para enviar la imagen al servidor, puedes usar FormData, por ejemplo
     const formData = new FormData();
-    formData.append("title", title);
+    formData.append("name", name);
     formData.append("description", description);
+    formData.append("price", price.toString());
     if (image) formData.append("image", image);
+    formData.append("category", category);
 
-    // Aquí realizarías la petición para subir el post
-    // fetch('/api/posts', { method: 'POST', body: formData });
+    // Aquí realizarías la petición para subir el producto
+    // fetch('/api/products', { method: 'POST', body: formData });
 
     onClose(); // Cierra el modal después de enviar
   };
@@ -49,21 +64,21 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           &times;
         </button>
 
-        {/* Formulario de creación de post */}
-        <h2 className="text-xl font-bold mb-4">Crear un nuevo post</h2>
+        {/* Formulario de creación de producto */}
+        <h2 className="text-xl font-bold mb-4">Crear un nuevo producto</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              htmlFor="title"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Título
+              Nombre
             </label>
             <input
               type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
@@ -83,6 +98,46 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
               rows={4}
               required
             />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Precio
+            </label>
+            <input
+              type="number"
+              id="price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          {/* Campo para seleccionar categoría */}
+          <div className="mb-4">
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Categoría
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Campo para adjuntar imagen */}
@@ -115,7 +170,7 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md"
           >
-            Crear Post
+            Crear Producto
           </button>
         </form>
       </div>
@@ -123,4 +178,4 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default CreatePost;
+export default CreateProduct;

@@ -2,46 +2,58 @@ import React from "react";
 import { format } from "date-fns";
 
 interface PostProps {
+  contenido: string;
+  fechacreacion: string;
   author: {
-    name: string;
-    avatarUrl?: string;
+    author_name: string;
+    urlusuario: string;
   };
-  description: string;
-  date: string;
-  imageUrl?: string;
+  imagen?: string;
 }
 
-const Post: React.FC<PostProps> = ({ author, description, date, imageUrl }) => {
+const Post: React.FC<PostProps> = ({
+  author,
+  contenido,
+  fechacreacion,
+  imagen,
+}) => {
+  let formattedDate = "Fecha inválida";
+  try {
+    formattedDate = format(new Date(fechacreacion), "MMMM dd, yyyy");
+  } catch (error) {
+    console.error("Error al formatear la fecha:", error);
+  }
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-xl">
       <div className="flex items-center mb-6">
-        {/* Avatar del autor con un fallback de imagen */}
         <img
-          src={author.avatarUrl || "https://via.placeholder.com/150"}
-          alt={author.avatarUrl ? `${author.name}'s avatar` : "Default avatar"}
+          src={author.urlusuario || "https://via.placeholder.com/150"}
+          alt={
+            author.urlusuario
+              ? `${author.author_name}'s avatar`
+              : "Default avatar"
+          }
           className="w-16 h-16 rounded-full border-4 border-gray-300"
         />
         <div className="ml-4">
-          <h2 className="text-2xl font-bold text-sky-500">{author.name}</h2>
-          {/* Fecha formateada */}
+          <h2 className="text-2xl font-bold text-sky-500">
+            {author.author_name}
+          </h2>
           <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
-            {format(new Date(date), "MMMM dd, yyyy")}
+            {formattedDate}
           </p>
         </div>
       </div>
-      <p className="text-lg text-gray-800 mb-6 leading-relaxed">
-        {description}
-      </p>
-      {/* Imagen de la publicación si existe */}
-      {imageUrl && (
+      <p className="text-lg text-gray-800 mb-6 leading-relaxed">{contenido}</p>
+      {imagen && (
         <img
-          src={imageUrl}
-          alt={description || "Post image"}
+          src={imagen}
+          alt={contenido || "Post image"}
           className="w-full h-96 object-cover rounded-xl mb-6"
         />
       )}
       <div className="flex justify-between mt-6">
-        {/* Botón de like */}
         <button
           aria-label="Like this post"
           className="text-sky-500 font-semibold flex flex-col items-center"
@@ -53,8 +65,6 @@ const Post: React.FC<PostProps> = ({ author, description, date, imageUrl }) => {
           />
           <span className="text-sm mt-1">Like</span>
         </button>
-
-        {/* Botón de comentario */}
         <button
           aria-label="Comment on this post"
           className="text-sky-500 font-semibold flex flex-col items-center"
@@ -66,8 +76,6 @@ const Post: React.FC<PostProps> = ({ author, description, date, imageUrl }) => {
           />
           <span className="text-sm mt-1">Comment</span>
         </button>
-
-        {/* Botón de compartir */}
         <button
           aria-label="Share this post"
           className="text-sky-500 font-semibold flex flex-col items-center"

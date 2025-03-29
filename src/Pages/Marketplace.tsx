@@ -1,54 +1,67 @@
-import React, { useState } from "react";
-
-export interface Producto {
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  categoria: string;
-  stock: number;
-  vendedor: string;
-  fechaCreacion: Date;
-}
-
-const products: Producto[] = [
-  {
-    nombre: "Product 1",
-    descripcion: "Description for product 1",
-    precio: 100,
-    categoria: "Category 1",
-    stock: 10,
-    vendedor: "Vendor 1",
-    fechaCreacion: new Date(),
-  },
-];
-
-const categories = ["All", "Category 1", "Category 2"];
+import React, { useState, useEffect } from "react";
+import useProductos from "../hooks/useProductos";
+import useCategorias from "../hooks/useCategorias";
+import CreateProduct from "../Components/UI/createProduct";
 
 const Marketplace: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const { productos } = useProductos(); // Usamos 'productos' en lugar de 'products'
+  const { categorias } = useCategorias(); // Obtenemos las categorías correctamente desde el hook
 
+  // Inicializamos 'selectedCategory' en "Todas"
+  const [selectedCategory, setSelectedCategory] = useState<string>("Todas");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Filtramos productos por categoría seleccionada
   const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter((product) => product.categoria === selectedCategory);
+    selectedCategory === "Todas"
+      ? productos // Usamos 'productos' en lugar de 'products'
+      : productos.filter((product) => product.categoria === selectedCategory);
+
+  useEffect(() => {
+    // Fetch posts when the component mounts
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#D3D4D9] p-6">
       <h1 className="text-3xl font-bold text-[#023047] text-center">
         Marketplace
       </h1>
+
+      <button
+        className="bg-[#BB0A21] text-white px-4 py-2 rounded-lg hover:bg-[#4B88A2] transition"
+        onClick={() => setIsModalOpen(true)}
+      >
+        + Agregar Producto
+      </button>
+      <CreateProduct
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        categories={categorias.map((category) => category.nombre)}
+      />
       <div className="mb-6 flex justify-center">
-        {categories.map((category) => (
+        {/* Mapeamos sobre las categorías recibidas */}
+        <button
+          key="Todas"
+          onClick={() => setSelectedCategory("Todas")}
+          className={`px-4 py-2 mx-2 rounded ${
+            selectedCategory === "Todas"
+              ? "bg-[#BB0A21] text-white"
+              : "bg-[#4B88A2] text-white hover:bg-[#023047]"
+          }`}
+        >
+          Todas
+        </button>
+        {categorias.map((category) => (
           <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
+            key={category.idcategoria} // Usamos 'idcategoria' como clave
+            onClick={() => setSelectedCategory(category.nombre)}
             className={`px-4 py-2 mx-2 rounded ${
-              selectedCategory === category
+              selectedCategory === category.nombre
                 ? "bg-[#BB0A21] text-white"
                 : "bg-[#4B88A2] text-white hover:bg-[#023047]"
             }`}
           >
-            {category}
+            {category.nombre}
           </button>
         ))}
       </div>
@@ -59,7 +72,7 @@ const Marketplace: React.FC = () => {
             className="bg-[#FFF9FB] p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <img
-              src="https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?auto=compress&cs=tinysrgb&w=600"
+              src={product.imagen} // Usamos la imagen del producto
               alt={product.nombre}
               className="w-full h-48 object-cover mb-4 rounded"
             />
@@ -70,11 +83,12 @@ const Marketplace: React.FC = () => {
             <p className="text-xl font-bold text-[#BB0A21]">
               ${product.precio}
             </p>
-            <p className="text-gray-500">Stock: {product.stock}</p>
-            <p className="text-gray-500">Vendedor: {product.vendedor}</p>
+            <p className="text-gray-500">Vendedor: {product.nombrevendedor}</p>{" "}
+            {/* Corregimos 'vendedor' a 'nombrevendedor' */}
             <p className="text-gray-500">Categoría: {product.categoria}</p>
             <p className="text-gray-500">
-              Fecha de creación: {product.fechaCreacion.toLocaleDateString()}
+              Fecha de creación:{" "}
+              {new Date(product.fechacreacion).toLocaleDateString()}{" "}
             </p>
           </div>
         ))}
