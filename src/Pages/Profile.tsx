@@ -27,7 +27,7 @@ const App: React.FC = () => {
           setError("Hubo un error al obtener los datos del usuario.");
         }
       } else {
-        setError("No hay token de acceso.");
+        window.location.href = "/login";
       }
     };
 

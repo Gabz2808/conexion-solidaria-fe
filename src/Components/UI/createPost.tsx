@@ -15,7 +15,6 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Aquí puedes agregar la lógica para enviar el post junto con la imagen
-    console.log("Post creado:", { title, description, image });
 
     // Para enviar la imagen al servidor, puedes usar FormData, por ejemplo
     const formData = new FormData();

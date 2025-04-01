@@ -2,12 +2,17 @@ import React from "react";
 import { format } from "date-fns";
 
 export interface Usuario {
-  idUsuario: number;
+  idperfilusuario: number;
+  direccion: string;
+  telefono: string;
+  urlusuario: string;
+  biografia: string;
+  idusuario: number;
   nombre: string;
   apellido: string;
   email: string;
   password: string;
-  fechaRegistro: string;
+  fecharegistro: Date;
   rol: string;
   estado: string;
 }
@@ -21,8 +26,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
     return <div className="text-center text-gray-500">Cargando...</div>;
   }
 
-  const formattedDate = usuario.fechaRegistro
-    ? format(new Date(usuario.fechaRegistro), "dd/MM/yyyy")
+  const formattedDate = usuario.fecharegistro
+    ? format(new Date(usuario.fecharegistro), "dd/MM/yyyy")
     : "Fecha no disponible";
 
   return (
@@ -47,18 +52,26 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
           {/* Imagen de perfil */}
           <div className="relative">
             <div className="w-48 h-48 bg-indigo-100 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-[#023047]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-24 w-24 text-[#023047]"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
+              {usuario.urlusuario ? (
+                <img
+                  src={usuario.urlusuario}
+                  alt="Perfil"
+                  className="w-full h-full rounded-full object-cover"
                 />
-              </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-24 w-24 text-[#023047]"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
             </div>
           </div>
           {/* Botones de acción */}
@@ -75,11 +88,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
             {usuario.nombre} {usuario.apellido},{" "}
             <span className="font-light text-[#4B88A2]">27</span>
           </h1>
-          <p className="font-light text-[#4B88A2] mt-3">Bucharest, Romania</p>
-          <p className="mt-8 text-[#023047]">
-            Solution Manager - Creative Tim Officer
-          </p>
-          <p className="mt-2 text-[#023047]">University of Computer Science</p>
+          <p className="font-light text-[#4B88A2] mt-3">{usuario.direccion}</p>
+          <p className="mt-8 text-[#023047]">{usuario.biografia}</p>
+          <p className="mt-2 text-[#023047]">{usuario.telefono}</p>
         </div>
 
         {/* Información adicional */}

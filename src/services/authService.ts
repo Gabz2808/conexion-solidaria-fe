@@ -1,49 +1,43 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:3000/auth';  // Asegúrate de que esta URL es correcta
+const API_URL = "http://localhost:3000/auth"; // Asegúrate de que esta URL es correcta
 
 // Función para iniciar sesión
-export const login = async (username: string, password: string) => {
+export const login = async (email: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, { username, password });
+    const response = await axios.post(`${API_URL}/login`, { email, password });
 
     // Verificar si se recibió el token
     if (response.data.access_token) {
       // Almacenar el token en localStorage
-      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem("access_token", response.data.access_token);
     }
-    
+
     return response.data;
   } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    throw new Error('Login failed');
+    console.error("Error al iniciar sesión:", error);
+    throw new Error("Login failed");
   }
 };
 
 // Función para cerrar sesión
 export const logout = () => {
   // Eliminar el token del localStorage al cerrar sesión
-  localStorage.removeItem('token');
-};
-
-// Función para obtener el token almacenado
-export const getToken = () => {
-  return localStorage.getItem('token');
-};
-
-// Función para verificar si el usuario está autenticado
-export const isAuthenticated = () => {
-  return !!getToken();
+  localStorage.removeItem("access_token");
 };
 
 // Función para realizar solicitudes HTTP protegidas
-export const axiosProtectedRequest = async (url: string, method: string = 'GET', data: Record<string, unknown> | null = null) => {
+export const axiosProtectedRequest = async (
+  url: string,
+  method: string = "GET",
+  data: Record<string, unknown> | null = null
+) => {
   try {
-    const token = getToken();
+    const token = localStorage.getItem("access_token");
 
     // Verificar si el token existe
     if (!token) {
-      throw new Error('No autenticado');
+      throw new Error("No autenticado");
     }
 
     // Configurar la cabecera Authorization con el token
@@ -63,7 +57,7 @@ export const axiosProtectedRequest = async (url: string, method: string = 'GET',
 
     return response.data;
   } catch (error) {
-    console.error('Error en solicitud protegida:', error);
-    throw new Error('No autorizado');
+    console.error("Error en solicitud protegida:", error);
+    throw new Error("No autorizado");
   }
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import useProductos from "../hooks/useProductos";
 import useCategorias from "../hooks/useCategorias";
 import CreateProduct from "../Components/UI/createProduct";
+import { Link } from "react-router-dom";
 
 const Marketplace: React.FC = () => {
   const { productos } = useProductos(); // Usamos 'productos' en lugar de 'products'
@@ -83,7 +84,15 @@ const Marketplace: React.FC = () => {
             <p className="text-xl font-bold text-[#BB0A21]">
               ${product.precio}
             </p>
-            <p className="text-gray-500">Vendedor: {product.nombrevendedor}</p>{" "}
+            <p className="text-gray-500">
+              Vendedor:{" "}
+              <Link
+                to={`/user/${product.idvendedor}`} // Enlazamos al perfil del vendedor
+                className="text-blue-500 hover:underline"
+              >
+                {product.nombrevendedor}
+              </Link>
+            </p>
             {/* Corregimos 'vendedor' a 'nombrevendedor' */}
             <p className="text-gray-500">Categoría: {product.categoria}</p>
             <p className="text-gray-500">

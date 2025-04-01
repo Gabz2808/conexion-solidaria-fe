@@ -1,81 +1,59 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; // Usar el contexto de autenticación
 
 const AuthForm: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Obtener la función login del contexto
 
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>(""); // Agregar estado para confirmar contraseña
-  const [nombre, setnombre] = useState<string>(""); // Nuevo estado para el nombre
-  const [apellido, setapellido] = useState<string>(""); // Nuevo estado para el apellido
+  const [confirmPassword, setConfirmPassword] = useState<string>(""); // Estado para confirmar contraseña
+  const [nombre, setNombre] = useState<string>(""); // Estado para el nombre
+  const [apellido, setApellido] = useState<string>(""); // Estado para el apellido
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validar contraseñas coincidentes en registro
     if (!isLogin && password !== confirmPassword) {
       setErrorMessage("Las contraseñas no coinciden");
       return;
     }
 
-    const payload = {
-      email,
-      password,
-      nombre,
-      apellido,
-    };
-
     try {
-      let response;
       if (isLogin) {
-        response = await fetch("http://localhost:3000/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
+        // Iniciar sesión
+        await login(email, password); // Usar la función login del contexto
+        navigate("/"); // Redirigir al perfil
       } else {
-        response = await fetch("http://localhost:3000/auth/register", {
+        // Registro
+        const payload = { email, password, nombre, apellido };
+        const response = await fetch("http://localhost:3000/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
         });
-      }
 
-      // Verificar si la respuesta es exitosa
-      if (!response.ok) {
+        if (!response.ok) {
+          const data = await response.json();
+          setErrorMessage(data.message || "Error al registrarse");
+          return;
+        }
+
         const data = await response.json();
-        console.error("Error de autenticación:", data.message);
-        setErrorMessage(data.message || "Error de autenticación");
-        return;
+        console.log("Registro exitoso", data);
+        setIsLogin(true); // Cambiar al modo de inicio de sesión después del registro
       }
-
-      const data = await response.json();
-      console.log("Autenticación exitosa", data);
-
-      // Guardar el token en el almacenamiento local
-      localStorage.setItem("access_token", data.access_token);
-
-      const token = localStorage.getItem("access_token"); // Obtener el token almacenado
-      fetch("http://localhost:3000/auth/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`, // Enviar el token como Bearer en el encabezado
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error("Error:", error));
-      console.log("Token almacenado:", data.access_token);
-      navigate("/profile");
     } catch (error) {
-      console.error("Hubo un error:", error);
-      setErrorMessage("Hubo un error en la solicitud");
+      console.error("Error en la autenticación:", error);
+      setErrorMessage(
+        "Error en la autenticación. Por favor, verifica tus credenciales."
+      );
     }
   };
 
@@ -109,7 +87,7 @@ const AuthForm: React.FC = () => {
                   type="text"
                   placeholder="Nombre"
                   value={nombre}
-                  onChange={(e) => setnombre(e.target.value)}
+                  onChange={(e) => setNombre(e.target.value)}
                   required
                 />
               </div>
@@ -126,7 +104,7 @@ const AuthForm: React.FC = () => {
                   type="text"
                   placeholder="Apellido"
                   value={apellido}
-                  onChange={(e) => setapellido(e.target.value)}
+                  onChange={(e) => setApellido(e.target.value)}
                   required
                 />
               </div>

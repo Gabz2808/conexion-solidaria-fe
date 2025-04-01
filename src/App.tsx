@@ -12,6 +12,7 @@ import Marketplace from "./Pages/Marketplace";
 import Profile from "./Pages/Profile";
 import Messages from "./Pages/Messages";
 import Groups from "./Pages/Groups";
+import UserPage from "./Pages/UserPage";
 import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 import "./index.css";
@@ -27,7 +28,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-
+          <Route path="/user/:idUsuario" element={<UserPage />} />{" "}
           {/* Rutas protegidas */}
           <Route
             path="/marketplace"

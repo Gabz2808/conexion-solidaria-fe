@@ -6,6 +6,7 @@ interface ProductoData {
   nombre: string;
   descripcion: string;
   precio: number;
+  idvendedor: number;
   nombrevendedor: string;
   categoria: string;
   imagen: string;
@@ -26,7 +27,6 @@ const useProductos = () => {
         }
         const data = await response.json();
 
-        console.log("productos recibidos:", data);
 
         if (Array.isArray(data)) {
           setProductos(data);

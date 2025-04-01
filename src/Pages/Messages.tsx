@@ -1,10 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ChatComponent from "../Components/UI/chatComponent";
 import MessageComponent from "../Components/UI/messageComponent";
 import { MensajesPrivados } from "@/models/MensajesPrivados";
 import { Chats } from "@/models/Chats";
+import { useAuth } from "../context/AuthContext";
 
 const Messages: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {}, []);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login"); // Redirect to login if not authenticated
+    }
+  }, [isAuthenticated, navigate]);
+
   const chat: Chats = {
     idChat: 1,
     idUsuario1: 1,

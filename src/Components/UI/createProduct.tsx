@@ -21,14 +21,6 @@ const CreateProduct: React.FC<ModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica para enviar el producto junto con la imagen
-    console.log("Producto creado:", {
-      name,
-      description,
-      price,
-      image,
-      category,
-    });
 
     // Para enviar la imagen al servidor, puedes usar FormData, por ejemplo
     const formData = new FormData();

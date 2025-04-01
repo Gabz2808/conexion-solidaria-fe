@@ -19,7 +19,6 @@ const useCategorias = () => {
         }
         const data = await response.json();
 
-        console.log("Categorías recibidas:", data);
 
         if (Array.isArray(data)) {
           setCategorias(data);
