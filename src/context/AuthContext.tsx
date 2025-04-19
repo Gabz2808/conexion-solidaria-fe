@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { Usuario } from "../models/Usuario"; // Ajusta la ruta según donde hayas guardado el archivo
+import { Usuario } from "../models/Usuario";
 
-// Definir el tipo de datos del contexto
 interface AuthContextType {
   isAuthenticated: boolean;
   usuario: Usuario | null;
@@ -9,12 +8,10 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Crear el contexto
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
-// Hook personalizado para usar el contexto
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -23,7 +20,6 @@ export const useAuth = (): AuthContextType => {
   return context;
 };
 
-// Proveedor del contexto
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -34,9 +30,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const token = localStorage.getItem("access_token");
     if (token) {
       fetchUserProfile(token);
+      startTokenRefreshInterval(); // Inicia el intervalo para renovar el token
     } else {
       setIsAuthenticated(false);
     }
+
+    return () => {
+      stopTokenRefreshInterval(); // Limpia el intervalo al desmontar
+    };
   }, []);
 
   const fetchUserProfile = async (token: string) => {
@@ -49,17 +50,60 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (response.ok) {
         const data = await response.json();
-        const usuarioConId = { ...data, idusuario: data.sub }; // Mapear `sub` a `idusuario`
-        console.log("Perfil del usuario:", usuarioConId); // Verificar que `idusuario` esté presente
-        setUsuario(usuarioConId); // Actualiza el perfil del usuario
+        const usuarioConId = { ...data, idusuario: data.sub };
+        setUsuario(usuarioConId);
         setIsAuthenticated(true);
       } else {
-        console.warn("Token inválido o expirado. Cerrando sesión...");
         handleLogout();
       }
     } catch (error) {
       console.error("Error al obtener el perfil del usuario:", error);
       handleLogout();
+    }
+  };
+
+  const refreshAccessToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem("refresh_token");
+      if (!refreshToken) {
+        throw new Error("No se encontró el refresh token.");
+      }
+
+      const response = await fetch("http://localhost:3000/auth/refresh", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newAccessToken = data.access_token;
+        localStorage.setItem("access_token", newAccessToken);
+        console.log("Token renovado exitosamente.");
+      } else {
+        console.warn("No se pudo renovar el token. Cerrando sesión...");
+        handleLogout();
+      }
+    } catch (error) {
+      console.error("Error al renovar el token:", error);
+      handleLogout();
+    }
+  };
+
+  const startTokenRefreshInterval = () => {
+    const interval = setInterval(() => {
+      refreshAccessToken();
+    }, 15 * 60 * 1000); // Renueva el token cada 15 minutos
+    localStorage.setItem("token_refresh_interval", interval.toString());
+  };
+
+  const stopTokenRefreshInterval = () => {
+    const interval = localStorage.getItem("token_refresh_interval");
+    if (interval) {
+      clearInterval(parseInt(interval, 10));
+      localStorage.removeItem("token_refresh_interval");
     }
   };
 
@@ -80,10 +124,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = await response.json();
       const token = data.access_token;
+      const refreshToken = data.refresh_token;
 
-      if (token) {
+      if (token && refreshToken) {
         localStorage.setItem("access_token", token);
-        await fetchUserProfile(token); // Obtén el perfil del usuario
+        localStorage.setItem("refresh_token", refreshToken);
+        await fetchUserProfile(token);
+        startTokenRefreshInterval(); // Inicia el intervalo para renovar el token
       }
     } catch (error) {
       console.error("Error al iniciar sesión desde el contexto:", error);
@@ -97,11 +144,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    stopTokenRefreshInterval();
     setIsAuthenticated(false);
     setUsuario(null);
     console.info("Sesión cerrada correctamente.");
   };
-  console.log("Usuario autenticado:", usuario?.idusuario); // Verifica que `usuario` contenga `idusuario`
+
   return (
     <AuthContext.Provider value={{ isAuthenticated, usuario, login, logout }}>
       {children}

@@ -16,6 +16,7 @@ interface PostData {
   autor: string; // Nombre completo del autor
   cantidad_likes: number; // Número de likes
   comentarios: Comentario[]; // Lista de comentarios
+  urlusuario: string;
 }
 
 const usePosts = () => {
@@ -45,6 +46,7 @@ const usePosts = () => {
             imagen: post.imagen || undefined,
             autor: post.autor,
             cantidad_likes: post.cantidad_likes,
+            urlusuario: post.urlusuario,
             comentarios: Array.isArray(post.comentarios)
               ? post.comentarios.map((comentario) => ({
                   idcomentario: comentario.idcomentario,

@@ -47,8 +47,8 @@ const Home: React.FC = () => {
                 idpost={post.idpost} // Pasando el id del post
                 titulo={post.titulo} // Pasando el título del post
                 autor={{
-                  author_name: post.autor ?? "Anónimo", // Maneja el caso null o undefined
-                  urlusuario: "", // Avatar genérico, ya que no se incluye en los datos
+                  author_name: post.autor,
+                  urlusuario: post.urlusuario // URL de la imagen del autor no disponible
                 }}
                 contenido={post.contenido}
                 fechacreacion={post.fecha_post} // Cambiado a fecha_post para coincidir con la vista

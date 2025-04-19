@@ -1,38 +1,43 @@
 import React, { useState, useEffect } from "react";
 import ProfileCard, { Usuario } from "../Components/UI/profileCard";
+import { useAuth } from "../Context/AuthContext"; // Importa el hook personalizado
 
 const App: React.FC = () => {
+  const { usuario: usuarioContext } = useAuth(); // Obtén el usuario desde el contexto
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        try {
-          const response = await fetch("http://localhost:3000/auth/me", {
+      if (!usuarioContext?.idusuario) {
+        setError("No se encontró un usuario autenticado.");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/vusuarios/${usuarioContext.idusuario}`,
+          {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Incluye el token en la cabecera
             },
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            setUsuario(data);
-          } else {
-            setError("No se pudo obtener los datos del usuario.");
           }
-        } catch {
-          setError("Hubo un error al obtener los datos del usuario.");
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUsuario(data);
+        } else {
+          setError("No se pudo obtener los datos del usuario.");
         }
-      } else {
-        window.location.href = "/login";
+      } catch {
+        setError("Ocurrió un error al conectar con el servidor.");
       }
     };
 
     fetchUserProfile();
-  }, []);
+  }, [usuarioContext]);
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;

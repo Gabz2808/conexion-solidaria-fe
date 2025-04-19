@@ -97,13 +97,13 @@ const Post: React.FC<PostProps> = ({
   } catch (error) {
     console.error("Error al formatear la fecha:", error);
   }
-
+console.log(autor)
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
       {/* Header del post */}
       <div className="flex items-center mb-6">
         <img
-          src={autor.urlusuario || "https://via.placeholder.com/150"} // Imagen de avatar genérica si no hay URL
+          src={autor.urlusuario} // Imagen de avatar genérica si no hay URL
           alt={`${autor.author_name}'s avatar`}
           className="w-16 h-16 rounded-full border-4 border-sky-500"
         />
@@ -190,24 +190,24 @@ const Post: React.FC<PostProps> = ({
 
         {/* Lista de comentarios */}
         {allComments.length > 0 ? (
-          allComments.map((comentario) => (
+          allComments.slice(0, 5).map((comentario) => (
             <div
               key={comentario.idcomentario}
               className="mb-4 p-3 bg-white rounded-lg shadow-sm border border-gray-200"
             >
               <p className="text-gray-800">
-                <span className="font-bold text-sky-600">
-                  {comentario.autor_comentario}:
-                </span>{" "}
-                {comentario.contenido}
+          <span className="font-bold text-sky-600">
+            {comentario.autor_comentario}:
+          </span>{" "}
+          {comentario.contenido}
               </p>
               <p className="text-sm text-gray-500">
-                {comentario.fecha_comentario
-                  ? format(
-                      new Date(comentario.fecha_comentario),
-                      "MMMM dd, yyyy"
-                    )
-                  : "Fecha no disponible"}{" "}
+          {comentario.fecha_comentario
+            ? format(
+                new Date(comentario.fecha_comentario),
+                "MMMM dd, yyyy"
+              )
+            : "Fecha no disponible"}{" "}
               </p>
             </div>
           ))
@@ -216,6 +216,17 @@ const Post: React.FC<PostProps> = ({
             No hay comentarios aún. ¡Sé el primero en comentar!
           </p>
         )}
+        {allComments.length > 5 && (
+          <button
+            onClick={() =>
+              setAllComments((prev) => [...prev])
+            }
+            className="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition"
+          >
+            Cargar más comentarios
+          </button>
+        )}
+        
       </div>
     </div>
   );
