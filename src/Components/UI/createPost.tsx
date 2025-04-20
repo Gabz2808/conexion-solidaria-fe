@@ -12,21 +12,7 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Aquí puedes agregar la lógica para enviar el post junto con la imagen
-
-    // Para enviar la imagen al servidor, puedes usar FormData, por ejemplo
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    if (image) formData.append("image", image);
-
-    // Aquí realizarías la petición para subir el post
-    // fetch('/api/posts', { method: 'POST', body: formData });
-
-    onClose(); // Cierra el modal después de enviar
-  };
+  // Removed duplicate handleSubmit function to avoid redeclaration error.
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -34,6 +20,26 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       setImage(file);
     }
   };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {title, description, image};
+    const response = await fetch("http://localhost:3000/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const data = await response.json();
+      console.error(data.message || "Error al crear el post");
+      return;
+    }
+    const data = await response.json();
+      console.log("Post creado exitosamente", data);
+    };
 
   return (
     <div
