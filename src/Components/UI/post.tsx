@@ -13,10 +13,8 @@ interface PostProps {
   titulo: string;
   contenido: string;
   fechacreacion: string;
-  autor: {
-    author_name: string;
-    urlusuario: string;
-  };
+  author_name: string;
+  urlusuario: string;
   imagen?: string;
   likes: number;
   comentarios: Comment[];
@@ -27,9 +25,10 @@ const Post: React.FC<PostProps> = ({
   titulo,
   contenido,
   fechacreacion,
-  autor,
   imagen,
   likes,
+  author_name,
+  urlusuario,
   comentarios,
   idpost,
 }) => {
@@ -38,13 +37,12 @@ const Post: React.FC<PostProps> = ({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const { usuario } = useAuth();
+
   const handleAddComment = async () => {
     if (newComment.trim() === "") return;
 
     if (!usuario || !usuario.idusuario) {
-      alert(
-        "No se pudo obtener el ID del usuario. Por favor, inicia sesión nuevamente."
-      );
+      alert("No se pudo obtener el ID del usuario. Por favor, inicia sesión nuevamente.");
       return;
     }
 
@@ -63,7 +61,7 @@ const Post: React.FC<PostProps> = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Token de autenticación
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         body: JSON.stringify(comentarioData),
       });
@@ -72,22 +70,21 @@ const Post: React.FC<PostProps> = ({
         throw new Error("Error al agregar el comentario");
       }
 
-      const savedComment = await response.json(); // Obtener el comentario guardado desde el backend
+      const savedComment = await response.json();
 
-      // Agregar manualmente el nombre del autor y la fecha al comentario
       const newCommentWithDetails: Comment = {
         ...savedComment,
-        autor_comentario: `${usuario.nombre} ${usuario.apellido}`, // Usa el nombre completo del usuario autenticado
-        fecha_comentario: new Date().toISOString(), // Usa la fecha actual
+        autor_comentario: `${usuario.nombre} ${usuario.apellido}`,
+        fecha_comentario: new Date().toISOString(),
       };
 
-      setAllComments([newCommentWithDetails, ...allComments]); // Agregar el nuevo comentario al inicio
-      setNewComment(""); // Limpiar el campo de entrada
+      setAllComments([newCommentWithDetails, ...allComments]);
+      setNewComment("");
     } catch (error) {
       console.error("Error al agregar el comentario:", error);
       alert("Hubo un error al agregar el comentario. Inténtalo de nuevo.");
     } finally {
-      setIsSubmitting(false); // Finalizar el estado de envío
+      setIsSubmitting(false);
     }
   };
 
@@ -97,19 +94,19 @@ const Post: React.FC<PostProps> = ({
   } catch (error) {
     console.error("Error al formatear la fecha:", error);
   }
-console.log(autor)
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
       {/* Header del post */}
       <div className="flex items-center mb-6">
         <img
-          src={autor.urlusuario} // Imagen de avatar genérica si no hay URL
-          alt={`${autor.author_name}'s avatar`}
+          src={urlusuario}
+          alt={`${author_name}'s avatar`}
           className="w-16 h-16 rounded-full border-4 border-sky-500"
         />
         <div className="ml-4">
           <h2 className="text-2xl font-bold text-sky-600 hover:underline">
-            {autor.author_name}
+            {author_name}
           </h2>
           <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
             {formattedDate}
@@ -169,7 +166,6 @@ console.log(autor)
       <div className="mt-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Comentarios</h3>
 
-        {/* Campo para agregar un nuevo comentario */}
         <div className="mb-4 flex items-center">
           <input
             type="text"
@@ -177,18 +173,17 @@ console.log(autor)
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Escribe un comentario..."
             className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-            disabled={isSubmitting} // Deshabilitar mientras se envía
+            disabled={isSubmitting}
           />
           <button
             onClick={handleAddComment}
             className="ml-2 bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition"
-            disabled={isSubmitting} // Deshabilitar mientras se envía
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Enviando..." : "Comentar"}
           </button>
         </div>
 
-        {/* Lista de comentarios */}
         {allComments.length > 0 ? (
           allComments.slice(0, 5).map((comentario) => (
             <div
@@ -196,37 +191,30 @@ console.log(autor)
               className="mb-4 p-3 bg-white rounded-lg shadow-sm border border-gray-200"
             >
               <p className="text-gray-800">
-          <span className="font-bold text-sky-600">
-            {comentario.autor_comentario}:
-          </span>{" "}
-          {comentario.contenido}
+                <span className="font-bold text-sky-600">
+                  {comentario.autor_comentario}:
+                </span>{" "}
+                {comentario.contenido}
               </p>
               <p className="text-sm text-gray-500">
-          {comentario.fecha_comentario
-            ? format(
-                new Date(comentario.fecha_comentario),
-                "MMMM dd, yyyy"
-              )
-            : "Fecha no disponible"}{" "}
+                {comentario.fecha_comentario
+                  ? format(new Date(comentario.fecha_comentario), "MMMM dd, yyyy")
+                  : "Fecha no disponible"}
               </p>
             </div>
           ))
         ) : (
-          <p className="text-gray-500">
-            No hay comentarios aún. ¡Sé el primero en comentar!
-          </p>
+          <p className="text-gray-500">No hay comentarios aún. ¡Sé el primero en comentar!</p>
         )}
+
         {allComments.length > 5 && (
           <button
-            onClick={() =>
-              setAllComments((prev) => [...prev])
-            }
+            onClick={() => setAllComments((prev) => [...prev])}
             className="mt-4 bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition"
           >
             Cargar más comentarios
           </button>
         )}
-        
       </div>
     </div>
   );

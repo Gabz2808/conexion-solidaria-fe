@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProfileCard, { Usuario } from "../Components/UI/profileCard";
-import { useAuth } from "../Context/AuthContext"; // Importa el hook personalizado
+import { useAuth } from "../context/AuthContext"; // Importa el hook personalizado
 
 const App: React.FC = () => {
   const { usuario: usuarioContext } = useAuth(); // Obtén el usuario desde el contexto

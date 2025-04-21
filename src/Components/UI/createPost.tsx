@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-
+import { useAuth } from "../../context/AuthContext"; // Importa el hook personalizado
+import { redirect } from "react-router-dom";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
-  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const { usuario: usuarioContext } = useAuth(); // Obtén el usuario desde el contexto
 
   if (!isOpen) return null;
-
-  // Removed duplicate handleSubmit function to avoid redeclaration error.
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -20,26 +19,42 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       setImage(file);
     }
   };
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {title, description, image};
-    const response = await fetch("http://localhost:3000/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      console.error(data.message || "Error al crear el post");
+
+    // Crear un objeto FormData
+    const formData = new FormData();
+    formData.append("contenido", description);
+    if (usuarioContext && usuarioContext.idusuario !== undefined) {
+      formData.append("idusuario", String(usuarioContext.idusuario)); // Cambia esto por el ID del usuario autenticado
+    } else {
+      console.error("El usuario no está autenticado o falta el ID del usuario.");
       return;
     }
-    const data = await response.json();
+    if (image) {
+      formData.append("image", image); // Agrega la imagen al FormData
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/posts", {
+        method: "POST",
+        body: formData, // Enviar FormData
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.error(data.message || "Error al crear el post");
+        return;
+      }
+
+      const data = await response.json();
       console.log("Post creado exitosamente", data);
-    };
+    } catch (error) {
+      console.error("Error al enviar el post:", error);
+    }
+
+    redirect("/"); // Redirigir a la página de posts después de crear el post
+  };
 
   return (
     <div
@@ -57,22 +72,7 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         {/* Formulario de creación de post */}
         <h2 className="text-xl font-bold mb-4">Crear un nuevo post</h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="title"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Título
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
+
           <div className="mb-4">
             <label
               htmlFor="description"
@@ -86,7 +86,7 @@ const CreatePost: React.FC<ModalProps> = ({ isOpen, onClose }) => {
               onChange={(e) => setDescription(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               rows={4}
-              required
+              
             />
           </div>
 
