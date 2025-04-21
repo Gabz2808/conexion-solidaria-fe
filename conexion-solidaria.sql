@@ -126,6 +126,19 @@ CREATE TABLE IF NOT EXISTS public.posts
     CONSTRAINT posts_pkey PRIMARY KEY (idposts)
 );
 
+
+CREATE TABLE IF NOT EXISTS public.compartidos
+(
+    idcompartido serial NOT NULL,
+    idusuario integer,
+    idpost integer,
+    fechacreacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT compartidos_pkey PRIMARY KEY (idcompartido),
+    CONSTRAINT compartidos_idusuario_fkey FOREIGN KEY (idusuario) REFERENCES public.usuario (idusuario) ON DELETE CASCADE,
+    CONSTRAINT compartidos_idpost_fkey FOREIGN KEY (idpost) REFERENCES public.posts (idposts) ON DELETE CASCADE
+);
+
+
 CREATE TABLE IF NOT EXISTS public.producto
 (
     idproducto serial NOT NULL,
@@ -162,6 +175,106 @@ CREATE TABLE IF NOT EXISTS public.usuario
     CONSTRAINT usuario_pkey PRIMARY KEY (idusuario),
     CONSTRAINT usuario_email_key UNIQUE (email)
 );
+
+-- Tabla perfil de usuario
+CREATE TABLE IF NOT EXISTS usuarios_perfil (
+    idUsuario INTEGER PRIMARY KEY,
+    direccion TEXT,
+    telefono TEXT,
+    foto_perfil TEXT,
+    biografia TEXT,
+    FOREIGN KEY (idUsuario) REFERENCES usuario(idusuario)
+);
+--Triggers para actualizar contadores en la tabla posts
+
+CREATE OR REPLACE FUNCTION actualizar_likes() RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE public.posts SET total_likes = total_likes + 1 WHERE idposts = NEW.idpost;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE public.posts SET total_likes = total_likes - 1 WHERE idposts = OLD.idpost;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_likes
+AFTER INSERT OR DELETE ON public.likes
+FOR EACH ROW EXECUTE FUNCTION actualizar_likes();
+
+
+CREATE OR REPLACE FUNCTION actualizar_comentarios() RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE public.posts SET total_comentarios = total_comentarios + 1 WHERE idposts = NEW.idpost;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE public.posts SET total_comentarios = total_comentarios - 1 WHERE idposts = OLD.idpost;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_comentarios
+AFTER INSERT OR DELETE ON public.comentarios
+FOR EACH ROW EXECUTE FUNCTION actualizar_comentarios();
+
+
+CREATE OR REPLACE FUNCTION actualizar_compartidos() RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        UPDATE public.posts SET total_compartidos = total_compartidos + 1 WHERE idposts = NEW.idpost;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE public.posts SET total_compartidos = total_compartidos - 1 WHERE idposts = OLD.idpost;
+    END IF;
+    RETURN NULL;
+    END;    
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_compartidos
+AFTER INSERT OR DELETE ON public.compartidos
+FOR EACH ROW EXECUTE FUNCTION actualizar_compartidos();
+
+-- Vista dinamica para buscar productos
+
+CREATE OR REPLACE FUNCTION buscar_productos(
+    nombre_busqueda TEXT DEFAULT NULL,
+    precio_minimo NUMERIC DEFAULT NULL,
+    precio_maximo NUMERIC DEFAULT NULL
+) RETURNS TABLE (
+    idproducto INTEGER,
+    nombre TEXT,
+    descripcion TEXT,
+    precio NUMERIC,
+    stock INTEGER,
+    idusuario INTEGER,
+    fechacreacion TIMESTAMP,
+    idCategoria INTEGER,
+    imagen TEXT
+) AS $$
+BEGIN
+    RETURN QUERY 
+    SELECT 
+        p.idproducto, p.nombre, p.descripcion, p.precio, 
+        p.stock, p.idusuario, p.fechacreacion, 
+        p."idCategoria", p.imagen
+    FROM public.producto p
+    WHERE 
+        (nombre_busqueda IS NULL OR p.nombre ILIKE '%' || nombre_busqueda || '%') AND
+        (precio_minimo IS NULL OR p.precio >= precio_minimo) AND
+        (precio_maximo IS NULL OR p.precio <= precio_maximo);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Left Join
+SELECT 
+    g.idGrupo,
+    g.nombre AS nombre_grupo,
+    mg.idUsuario
+FROM 
+    grupos g
+LEFT JOIN miembrosgrupo mg ON g.idgrupo = mg.idgrupo;
+
+
 
 ALTER TABLE IF EXISTS public.amigos
     ADD CONSTRAINT amigos_idusuario1_fkey FOREIGN KEY (idusuario1)
@@ -259,5 +372,15 @@ ALTER TABLE IF EXISTS public.mensajesprivados
     REFERENCES public.usuario (idusuario) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE CASCADE;
+
+--Contadores
+ALTER TABLE public.posts
+    ADD COLUMN total_likes integer DEFAULT 0;
+
+ALTER TABLE public.posts
+    ADD COLUMN total_comentarios integer DEFAULT 0;
+
+ALTER TABLE public.posts
+    ADD COLUMN total_compartidos integer DEFAULT 0;
 
 END;
