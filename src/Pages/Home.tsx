@@ -46,10 +46,8 @@ const Home: React.FC = () => {
               <Post
                 idpost={post.idpost} // Pasando el id del post
                 titulo={post.titulo} // Pasando el título del post
-                autor={{
-                  author_name: post.autor,
-                  urlusuario: post.urlusuario // URL de la imagen del autor no disponible
-                }}
+                author_name={post.autor} // Pasando el nombre del autor
+                urlusuario={post.urlusuario} // Pasando la URL de la imagen del autor
                 contenido={post.contenido}
                 fechacreacion={post.fecha_post} // Cambiado a fecha_post para coincidir con la vista
                 imagen={post.imagen}
