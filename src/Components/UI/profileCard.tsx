@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
+import { useAuth } from "../../context/AuthContext"; // Para acceder a la autenticación
 
 export interface Usuario {
   idperfilusuario: number;
@@ -15,6 +16,9 @@ export interface Usuario {
   fecharegistro: Date;
   rol: string;
   estado: string;
+  productos_totales: number;
+  posts_totales: number;
+  amigos_totales: number;
 }
 
 interface ProfileCardProps {
@@ -22,9 +26,20 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
+  const { usuario: usuarioContext } = useAuth(); // Obtener el usuario autenticado
   const [isEditing, setIsEditing] = useState(false);
   const [editedUsuario, setEditedUsuario] = useState<Usuario | null>(usuario || null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Validar si el perfil es del usuario autenticado
+  const isOwnProfile = usuario?.idusuario === usuarioContext?.idusuario;
+
+  useEffect(() => {
+    // Si no es el usuario autenticado, no se debe permitir editar
+    if (!isOwnProfile) {
+      setIsEditing(false);
+    }
+  }, [isOwnProfile]);
 
   if (!usuario) {
     return <div className="text-center text-gray-500">Cargando...</div>;
@@ -73,6 +88,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
   };
 
   const handleSave = async () => {
+    if (!editedUsuario) return;
+
     try {
       const response = await fetch(`http://localhost:3000/perfilusuario/${usuario.idusuario}`, {
         method: "PUT",
@@ -108,16 +125,16 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
           {/* Estadísticas */}
           <div className="grid grid-cols-3 text-center order-last md:order-first mt-20 md:mt-0">
             <div>
-              <p className="font-bold text-[#4B88A2] text-xl">22</p>
+              <p className="font-bold text-[#4B88A2] text-xl">{usuario.amigos_totales}</p>
               <p className="text-[#4B88A2]">Amigos</p>
             </div>
             <div>
-              <p className="font-bold text-[#4B88A2] text-xl">10</p>
-              <p className="text-[#4B88A2]">Fotos</p>
+              <p className="font-bold text-[#4B88A2] text-xl">{usuario.posts_totales}</p>
+              <p className="text-[#4B88A2]">Posts</p>
             </div>
             <div>
-              <p className="font-bold text-[#4B88A2] text-xl">89</p>
-              <p className="text-[#4B88A2]">Comentarios</p>
+              <p className="font-bold text-[#4B88A2] text-xl">{usuario.productos_totales}</p>
+              <p className="text-[#4B88A2]">Productos</p>
             </div>
           </div>
 
@@ -133,22 +150,24 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ usuario }) => {
           </div>
 
           {/* Botones de acción */}
-          <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
-            <button
-              className="text-white py-2 px-4 uppercase rounded bg-[#BB0A21] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? "Cancelar" : "Editar"}
-            </button>
-            {isEditing && (
+          {isOwnProfile && (
+            <div className="space-x-8 flex justify-between mt-32 md:mt-0 md:justify-center">
               <button
-                className="text-white py-2 px-4 uppercase rounded bg-[#4B88A2] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
-                onClick={handleSave}
+                className="text-white py-2 px-4 uppercase rounded bg-[#BB0A21] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+                onClick={() => setIsEditing(!isEditing)}
               >
-                Guardar
+                {isEditing ? "Cancelar" : "Editar"}
               </button>
-            )}
-          </div>
+              {isEditing && (
+                <button
+                  className="text-white py-2 px-4 uppercase rounded bg-[#4B88A2] hover:bg-[#023047] shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+                  onClick={handleSave}
+                >
+                  Guardar
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Detalles del perfil */}

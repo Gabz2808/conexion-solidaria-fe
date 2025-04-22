@@ -39,6 +39,8 @@ const Post: React.FC<PostProps> = ({
   const [newComment, setNewComment] = useState<string>("");
   const [allComments, setAllComments] = useState<Comment[]>(comentarios);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [liked, setLiked] = useState(false);
+  const [postLikes, setPostLikes] = useState(likes);
 
   const { usuario } = useAuth();
 
@@ -110,6 +112,41 @@ const Post: React.FC<PostProps> = ({
     console.error("Error al formatear la fecha:", error);
   }
 
+  const toggleLike = async () => {
+    if (!usuario || !usuario.idusuario) {
+      alert("Debes iniciar sesión para dar like.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:3000/likes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({ idpost, idusuario: usuario.idusuario }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("No se pudo realizar la acción");
+      }
+  
+      const result = await response.json();
+      setLiked(result.liked);
+  
+      // Actualiza el contador de likes en base al resultado
+      if (result.liked) {
+        setPostLikes((prev) => prev + 1);
+      } else {
+        setPostLikes((prev) => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error("Error al dar like:", error);
+    }
+  };
+  
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-lg rounded-xl border border-gray-200 hover:shadow-2xl transition-shadow duration-300">
       {/* Header del post */}
@@ -145,17 +182,19 @@ const Post: React.FC<PostProps> = ({
 
       {/* Botones de interacción */}
       <div className="flex justify-between mt-6">
-        <button
-          aria-label="Like this post"
-          className="text-sky-500 font-semibold flex flex-col items-center hover:text-sky-700 transition"
-        >
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png"
-            alt="Like"
-            className="w-8 h-8"
-          />
-          <span className="text-sm mt-1">{likes} Likes</span>
-        </button>
+      <button
+  onClick={toggleLike}
+  className={`text-sky-500 font-semibold flex flex-col items-center hover:text-sky-700 transition ${liked ? "text-red-600" : ""}`}
+>
+  <img
+    src={liked
+      ? "https://cdn-icons-png.flaticon.com/512/833/833472.png" // corazón lleno
+      : "https://cdn-icons-png.flaticon.com/512/1077/1077035.png"} // corazón vacío
+    alt="Like"
+    className="w-8 h-8"
+  />
+  <span className="text-sm mt-1">{postLikes} Likes</span>
+</button>
         <button
           aria-label="Comment on this post"
           className="text-sky-500 font-semibold flex flex-col items-center hover:text-sky-700 transition"

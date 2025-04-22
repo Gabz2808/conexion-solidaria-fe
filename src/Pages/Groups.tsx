@@ -2,10 +2,12 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGrupos from "../hooks/useGrupos"; // Importing useGrupos
 import { useAuth } from "../context/AuthContext";
+import useMiembrosGrupos from "../hooks/useMiembrosGrupos"; // Importing useMiembrosGrupos
 
 const Groups: React.FC = () => {
+  
   const { isAuthenticated } = useAuth();
-
+  const { miembrosGrupos } = useMiembrosGrupos(); // Using useMiembrosGrupos hook
   const { grupos } = useGrupos(); // Using useGrupos hook
   useEffect(() => {}, []);
   const navigate = useNavigate();
@@ -18,20 +20,26 @@ const Groups: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#D3D4D9] p-6 flex">
       {/* Sidebar */}
-      <aside className="w-1/4 bg-[#FFF9FB] p-4 shadow-lg rounded-lg h-fit">
-        <h2 className="text-xl font-bold mb-4 text-[#023047]">Tus Grupos</h2>
-        <ul className="space-y-3">
-          <li className="p-2 bg-[#4B88A2] text-white rounded cursor-pointer hover:bg-[#023047]">
-            Grupo 1
+      <aside className="w-full md:w-1/4 bg-[#FFF9FB] p-6 shadow-lg rounded-lg h-fit">
+  <h2 className="text-2xl font-bold mb-5 text-[#023047]">Tus Grupos</h2>
+  <nav aria-label="Lista de grupos del usuario">
+    <ul className="space-y-3">
+      {miembrosGrupos.length > 0 ? (
+        miembrosGrupos.map((miembro, index) => (
+          <li key={index} className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition">
+            <h3 className="text-xl font-semibold text-[#023047]">{miembro.nombre}</h3>
+            <p className="text-[#4B88A2]">{miembro.rol}</p>
+
           </li>
-          <li className="p-2 bg-[#4B88A2] text-white rounded cursor-pointer hover:bg-[#023047]">
-            Grupo 2
-          </li>
-          <li className="p-2 bg-[#4B88A2] text-white rounded cursor-pointer hover:bg-[#023047]">
-            Grupo 3
-          </li>
-        </ul>
-      </aside>
+        ))
+
+      ) : (
+        <li className="text-[#6c757d]">No perteneces a ningún grupo todavía.</li>
+      )}
+    </ul>
+  </nav>
+</aside>
+
 
       {/* Main Content */}
       <main className="flex-1 ml-6">

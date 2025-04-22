@@ -1,6 +1,11 @@
-export interface Chats{
-  idChat: number;
-  idUsuario1: number;
-  idUsuario2: number;
-  fechaCreacion: Date;
+export interface Usuario {
+  idusuario: number;
+  nombre: string;
+}
+
+export interface Chats {
+  idchat: number;
+  usuario1: Usuario;
+  usuario2: Usuario;
+  fechacreacion: string; // debe ser string, no Date
 }
