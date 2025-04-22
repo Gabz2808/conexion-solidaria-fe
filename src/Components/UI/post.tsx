@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
 import { useAuth } from "../../context/AuthContext"; // Usar el contexto de autenticación
+import { Link } from "react-router-dom";
 
 interface Comment {
   idcomentario: number;
   contenido: string;
   fecha_comentario: string;
   autor_comentario: string;
+  idusuario: number;
 }
 
 interface PostProps {
@@ -19,6 +21,7 @@ interface PostProps {
   likes: number;
   comentarios: Comment[];
   idpost: number;
+  idautor: number;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -31,6 +34,7 @@ const Post: React.FC<PostProps> = ({
   urlusuario,
   comentarios,
   idpost,
+  idautor,
 }) => {
   const [newComment, setNewComment] = useState<string>("");
   const [allComments, setAllComments] = useState<Comment[]>(comentarios);
@@ -48,7 +52,9 @@ const Post: React.FC<PostProps> = ({
 
     try {
       setIsSubmitting(true);
-
+      console.log("ID del usuario:", usuario.idusuario);
+      console.log("ID del post:", idpost);
+      console.log("Comentario:", newComment);
       const comentarioData = {
         contenido: newComment,
         idpost,
@@ -71,13 +77,22 @@ const Post: React.FC<PostProps> = ({
       }
 
       const savedComment = await response.json();
+      console.log("Comentario recibido del backend:", JSON.stringify(savedComment, null, 2));
+
 
       const newCommentWithDetails: Comment = {
-        ...savedComment,
-        autor_comentario: `${usuario.nombre} ${usuario.apellido}`,
-        fecha_comentario: new Date().toISOString(),
+        idcomentario: savedComment.idcomentario,
+        contenido: savedComment.contenido,
+        fecha_comentario: savedComment.fechacreacion, // adaptamos el nombre
+        autor_comentario: `${savedComment.usuario.nombre} ${savedComment.usuario.apellido}`, // lo tomamos del objeto
+        idusuario: savedComment.idusuario,
       };
-
+      
+      if (!savedComment.idcomentario || !usuario.idusuario) {
+        console.error("Comentario inválido recibido del backend:", savedComment);
+        alert("El comentario recibido es inválido.");
+        return;
+      }
       setAllComments([newCommentWithDetails, ...allComments]);
       setNewComment("");
     } catch (error) {
@@ -105,9 +120,12 @@ const Post: React.FC<PostProps> = ({
           className="w-16 h-16 rounded-full border-4 border-sky-500"
         />
         <div className="ml-4">
-          <h2 className="text-2xl font-bold text-sky-600 hover:underline">
+        <Link
+          to={`/user/${idautor}`}
+          className="text-2xl font-bold text-sky-600 hover:underline"
+          >
             {author_name}
-          </h2>
+        </Link>
           <p className="text-lg font-medium text-gray-600 dark:text-gray-400">
             {formattedDate}
           </p>
@@ -191,10 +209,14 @@ const Post: React.FC<PostProps> = ({
               className="mb-4 p-3 bg-white rounded-lg shadow-sm border border-gray-200"
             >
               <p className="text-gray-800">
-                <span className="font-bold text-sky-600">
-                  {comentario.autor_comentario}:
-                </span>{" "}
-                {comentario.contenido}
+              <Link
+                  to={`/user/${comentario.idusuario}`}
+                  className="font-bold text-sky-600 hover:underline"
+        >
+                {comentario.autor_comentario}
+              </Link>
+
+                : {comentario.contenido}
               </p>
               <p className="text-sm text-gray-500">
                 {comentario.fecha_comentario

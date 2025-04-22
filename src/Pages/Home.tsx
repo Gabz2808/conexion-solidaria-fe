@@ -46,13 +46,17 @@ const Home: React.FC = () => {
               <Post
                 idpost={post.idpost} // Pasando el id del post
                 titulo={post.titulo} // Pasando el título del post
-                author_name={post.autor} // Pasando el nombre del autor
-                urlusuario={post.urlusuario} // Pasando la URL de la imagen del autor
+                author_name={post.autor}
+                urlusuario={post.urlusuario} // URL de la imagen del autor no disponible
                 contenido={post.contenido}
                 fechacreacion={post.fecha_post} // Cambiado a fecha_post para coincidir con la vista
                 imagen={post.imagen}
                 likes={post.cantidad_likes} // Pasando la cantidad de likes
-                comentarios={post.comentarios} // Pasando los comentarios
+                comentarios={post.comentarios.map((comentario) => ({
+                  ...comentario,
+                  idusuario: comentario.idusuario || 0, // Asignar un valor predeterminado si falta
+                }))} // Pasando los comentarios
+                idautor={post.idautor} // Pasando el id del autor
               />
             </div>
           ))

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface Comentario {
+  idusuario: number;
   idcomentario: number; // ID del comentario
   contenido: string; // Contenido del comentario
   fecha_comentario: string; // Fecha de creación del comentario
@@ -13,6 +14,7 @@ interface PostData {
   contenido: string; // Contenido del post
   fecha_post: string; // Fecha de creación del post
   imagen?: string; // URL de la imagen del post (opcional)
+  idautor: number;
   autor: string; // Nombre completo del autor
   cantidad_likes: number; // Número de likes
   comentarios: Comentario[]; // Lista de comentarios
@@ -44,15 +46,18 @@ const usePosts = () => {
             contenido: post.contenido,
             fecha_post: post.fecha_post,
             imagen: post.imagen || undefined,
+            idautor: post.idautor,
             autor: post.autor,
             cantidad_likes: post.cantidad_likes,
             urlusuario: post.urlusuario,
             comentarios: Array.isArray(post.comentarios)
               ? post.comentarios.map((comentario) => ({
+                  idusuario: comentario.idusuario,
                   idcomentario: comentario.idcomentario,
                   contenido: comentario.contenido,
                   fecha_comentario: comentario.fecha_comentario,
                   autor_comentario: comentario.autor_comentario,
+                  
                 }))
               : [], // Si no hay comentarios, devolver un array vacío
           }));
