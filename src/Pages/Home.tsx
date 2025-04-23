@@ -7,9 +7,47 @@ import usePosts from "../hooks/usePosts"; // Importando el hook usePosts
 const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { posts, loading, error } = usePosts(); // Usando el hook usePosts
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  {selectedImage && (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+      onClick={() => setSelectedImage(null)}
+    >
+      <div
+        className="max-w-4xl max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()} // Para que no cierre el modal si hacen clic en la imagen
+      >
+        <img
+          src={selectedImage}
+          alt="Post ampliado"
+          className="rounded-lg shadow-lg w-full h-auto object-contain"
+        />
+      </div>
+    </div>
+  )}
+  
   return (
     <div className="container mx-auto p-6">
+      {/* MODAL para imagen ampliada */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="max-w-4xl max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={selectedImage}
+              alt="Post ampliado"
+              className="rounded-lg shadow-lg w-full h-auto object-contain"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Componente de historias */}
       <Stories />
 
@@ -51,6 +89,7 @@ const Home: React.FC = () => {
                 contenido={post.contenido}
                 fechacreacion={post.fecha_post} // Cambiado a fecha_post para coincidir con la vista
                 imagen={post.imagen}
+                onImageClick={(url) => setSelectedImage(url)}
                 likes={post.cantidad_likes} // Pasando la cantidad de likes
                 comentarios={post.comentarios.map((comentario) => ({
                   ...comentario,

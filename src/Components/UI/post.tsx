@@ -18,6 +18,7 @@ interface PostProps {
   author_name: string;
   urlusuario: string;
   imagen?: string;
+  onImageClick?: (url: string) => void;
   likes: number;
   comentarios: Comment[];
   idpost: number;
@@ -35,7 +36,9 @@ const Post: React.FC<PostProps> = ({
   comentarios,
   idpost,
   idautor,
+  onImageClick,
 }) => {
+  
   const [newComment, setNewComment] = useState<string>("");
   const [allComments, setAllComments] = useState<Comment[]>(comentarios);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -177,6 +180,7 @@ const Post: React.FC<PostProps> = ({
           src={imagen}
           alt={titulo || "Post image"}
           className="w-full h-96 object-cover rounded-xl mb-6 border border-gray-300"
+          onClick={() => onImageClick?.(imagen)}
         />
       )}
 

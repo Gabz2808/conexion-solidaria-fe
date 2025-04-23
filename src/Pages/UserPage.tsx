@@ -9,6 +9,13 @@ const UserPage: React.FC = () => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isFriend, setIsFriend] = useState<boolean>(false); // Para verificar si son amigos
+  const [activeTab, setActiveTab] = useState<string>("posts"); // Para manejar la pestaña activa
+  const [contenidoFiltrado, setContenidoFiltrado] = useState<any[]>([]);
+  const endpoint =
+  activeTab === "posts"
+    ? `http://localhost:3000/v-posts/id/${idUsuario}`
+    : `http://localhost:3000/productos/${idUsuario}`;
+
 
   // Función para enviar solicitud de amistad
   const handleSendFriendRequest = async () => {
@@ -76,7 +83,29 @@ const UserPage: React.FC = () => {
     if (idUsuario) {
       fetchUserProfile();
     }
-  }, [idUsuario]);
+  },[idUsuario]);
+
+  useEffect(() => {
+    const fetchContenido = async () => {
+      try {
+        const response = await fetch(endpoint);
+        if (response.ok) {
+          const data = await response.json();
+          setContenidoFiltrado(data);
+        } else {
+          setError("No se pudo obtener el contenido del usuario.");
+        }
+      } catch (err) {
+        setError("Error al conectar con el servidor.");
+      }
+    };
+  
+    if (idUsuario) {
+      fetchContenido();
+    }
+  }, [endpoint, idUsuario]);
+  
+
 
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
@@ -116,8 +145,55 @@ const UserPage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Botones de filtro */}
+<div className="flex justify-center gap-4 mt-10 mb-6">
+  <button
+    className={`px-4 py-2 rounded-lg transition ${
+      activeTab === "posts"
+        ? "bg-[#023047] text-white"
+        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+    }`}
+    onClick={() => setActiveTab("posts")}
+  >
+    Posts
+  </button>
+  <button
+    className={`px-4 py-2 rounded-lg transition ${
+      activeTab === "post"
+        ? "bg-[#023047] text-white"
+        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+    }`}
+    onClick={() => setActiveTab("productos")}
+  >
+    Productos
+  </button>
+</div>
+
+      <div className="mt-6 px-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {contenidoFiltrado.length > 0 ? (
+      contenidoFiltrado.map((item, index) => (
+        <div key={index} className="border rounded-xl p-4 bg-white shadow hover:shadow-md transition">
+          <h3 className="text-lg font-semibold text-[#023047]">
+            {item.titulo || item.nombre || "Sin título"}
+          </h3>
+          <p className="text-gray-600 text-sm mt-2">
+            {item.contenido || item.descripcion || "Sin descripción"}
+          </p>
+        </div>
+      ))
+    ) : (
+      <div className="col-span-full text-center text-gray-500">
+        No hay contenido para mostrar.
+      </div>
+    )}
+  </div>
+</div>
+
     </div>
   );
 };
 
 export default UserPage;
+  
