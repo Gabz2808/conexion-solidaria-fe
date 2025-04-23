@@ -25,15 +25,18 @@ const UserPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/solicitudes/amigos`, {
+      const response = await fetch(`http://localhost:3000/amigos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
+        
         body: JSON.stringify({
-          idUsuarioEmisor: usuarioContext.idusuario,
-          idUsuarioReceptor: usuario?.idusuario,
+          idusuario1: usuarioContext.idusuario,
+          idusuario2: usuario?.idusuario,
+          estado: "pendiente",
+          fechasolicitud: new Date().toISOString(), // Fecha actual
         }),
       });
 
@@ -48,14 +51,38 @@ const UserPage: React.FC = () => {
   };
 
   // Función para enviar un mensaje
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!usuarioContext?.idusuario) {
       setError("Necesitas estar autenticado para enviar un mensaje.");
       return;
     }
+    try {
+      const response = await fetch(`http://localhost:3000/chats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          usuario1: usuarioContext.idusuario,
+          usuario2: usuario?.idusuario,
 
-    // Aquí agregarías la lógica para iniciar un chat
+   
+          fechacreacion: new Date().toISOString(), // Fecha actual
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Chat creado");
+        window.location.href = "/messages";
+      } else {
+        setError("No se pudo craer el chat.");
+      }
+    } catch {
+      setError("Ocurrió un error al intentar crear el chat.");
+    }
     console.log(`Enviar mensaje a ${usuario?.nombre}`);
+
   };
 
   // Fetch del perfil de usuario
