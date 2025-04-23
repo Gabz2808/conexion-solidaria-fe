@@ -1,11 +1,9 @@
-// messageComponent.tsx
-
 import React from "react";
 import { MensajesPrivados } from "@/models/MensajesPrivados";
 
 export interface MensajesPrivadosProps {
   mensajes: MensajesPrivados[];
-  currentUserId: number; // <-- esta línea es necesaria
+  currentUserId: number;
 }
 
 const MessageComponent: React.FC<MensajesPrivadosProps> = ({
@@ -17,13 +15,15 @@ const MessageComponent: React.FC<MensajesPrivadosProps> = ({
       {mensajes.map((msg, index) => (
         <div
           key={index}
-          className={`p-2 rounded-lg ${
-            msg.AutorID === currentUserId ? "bg-blue-100 text-right" : "bg-gray-200 text-left"
+          className={`p-2 rounded-lg max-w-[75%] break-words ${
+            msg.idusuario === currentUserId
+              ? "bg-blue-100 text-right ml-auto"
+              : "bg-gray-200 text-left mr-auto"
           }`}
         >
-          <p>{msg.Contenido}</p>
+          <p>{msg.contenido}</p>
           <small className="text-xs text-gray-500">
-            {new Date(msg.fechaCreacion).toLocaleTimeString()}
+            {new Date(msg.fechacreacion).toLocaleTimeString()}
           </small>
         </div>
       ))}
